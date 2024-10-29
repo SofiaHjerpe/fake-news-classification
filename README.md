@@ -6,14 +6,14 @@ Jag hittade tidigare Github projekt där de använde data från CSV filer. Det v
 Det finns olika sätt att konvertera data till numeriskt format. Jag kommer att använda OrdinalEncoder från Scikit learn. Denna funktion kodar om kategoriska data till en numerisk lista. Andra metoder jag kan tillämpa är get_dummies() eller replace(). För att träna programet planerar jag att arbeta med Scikit learn och train_test_split funtionen.  
 
 ## Källor
-https://github.com/menanashat/Fake_News_Detection (2024-10-29) 
+https://github.com/menanashat/Fake_News_Detection 
 
-https://www.geeksforgeeks.org/how-to-convert-categorical-variable-to-numeric-in-pandas/ (2024-10-29) 
+https://www.geeksforgeeks.org/how-to-convert-categorical-variable-to-numeric-in-pandas/
 
-https://www.geeksforgeeks.org/supervised-unsupervised-learning/ (2024-10-29) 
+https://www.geeksforgeeks.org/supervised-unsupervised-learning/
 
-https://www.ibm.com/topics/logistic-regression (2024-10-29) 
+https://www.ibm.com/topics/logistic-regression 
 
-https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OrdinalEncoder.html (2024-10-29) 
+https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OrdinalEncoder.html 
 
-https://www.svt.se/nyheter/inrikes/tre-falska-nyheter-som-alla-trodde-var-pa-riktigt (2024-10-28) 
+https://www.svt.se/nyheter/inrikes/tre-falska-nyheter-som-alla-trodde-var-pa-riktigt 
