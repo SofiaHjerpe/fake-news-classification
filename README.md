@@ -12,8 +12,8 @@ https://www.geeksforgeeks.org/how-to-convert-categorical-variable-to-numeric-in-
 
 https://www.geeksforgeeks.org/supervised-unsupervised-learning/ (2024-10-29) 
 
-https://www.ibm.com/topics/logistic-regression
+https://www.ibm.com/topics/logistic-regression (2024-10-29) 
 
-https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OrdinalEncoder.html 
+https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OrdinalEncoder.html (2024-10-29) 
 
-https://www.svt.se/nyheter/inrikes/tre-falska-nyheter-som-alla-trodde-var-pa-riktigt  
+https://www.svt.se/nyheter/inrikes/tre-falska-nyheter-som-alla-trodde-var-pa-riktigt (2024-10-28) 
