@@ -1,7 +1,10 @@
 import pandas as pd
 import numpy as np
+import cProfile
+import xgboost as xgb
+import lightgbm as lgb
+from datetime import datetime 
 import re
-from nltk.stem.porter import PorterStemmer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
@@ -24,7 +27,7 @@ news_dataset.drop([ 'ämne', 'titel'], axis=1, inplace=True)
 eng_news_dataset.drop(['title', 'subject', 'date'], axis=1, inplace=True)
 
 #shorten down the eng_news_dataset, selecting 10000 random rows from the eng_news_dataset
-eng_news_dataset= eng_news_dataset.sample(n=10000) 
+eng_news_dataset= eng_news_dataset.sample(n=20000) 
 
 
 # Mergeing dataframes
@@ -48,7 +51,6 @@ X=dataset.drop(columns='label', axis=1)
 Y= dataset['label']
 
 
-port_stem=PorterStemmer()
 def stemming(content):
     # Remove urls, HTML tags, punctuation, digits, newline characters and stopwords
     stemmed_content = re.sub(r'https?://\S+|www\.\S+', '', content)
@@ -58,7 +60,6 @@ def stemming(content):
     stemmed_content = re.sub(r'\n', '', content)
     stemmed_content = stemmed_content.lower()
     stemmed_content = stemmed_content.split()   
-    # stemmed_content= [port_stem.stem(word) for word in stemmed_content if not word in stopwords.words('swedish') and stopwords.words('english') ]  
     stemmed_content= ' '.join(stemmed_content)  
     return stemmed_content
 
@@ -74,7 +75,8 @@ Y=dataset['label'].values
 print(dataset['content'])
 print(Y.shape)
 # convert textdata to numerical data. TfidfVectorizer() counts how many times a particually word is repeating in a document, text or paragraph. It defines a particually number to that.
-vectorizer=TfidfVectorizer()
+# Justify the vectorizers dimensionality
+vectorizer=TfidfVectorizer(max_features=1000)
 vectorizer.fit(X)
 
 X= vectorizer.transform(X)
@@ -82,7 +84,9 @@ print(X)
 
 # text will be used for X data, remaining Y datam stratify = Y , random state 
 
-X_train, X_test, Y_train, Y_test = train_test_split(X,Y, test_size=0.2, stratify= Y,random_state=2)
+X_train, X_test, Y_train, Y_test = train_test_split(X,Y, test_size=0.2,random_state=2)
+
+
 model= LogisticRegression()
 
 model.fit(X_train, Y_train)
@@ -98,6 +102,7 @@ test_data_accuraccy = accuracy_score(X_test_prediction, Y_test)
 print('Accuracy score of the test data: ', test_data_accuraccy)
 
 
+
 DTC = DecisionTreeClassifier()
 
 DTC.fit(X_train, Y_train)
@@ -108,6 +113,8 @@ DTC.score(X_test, Y_test)
 
 print(classification_report(Y_test, pred_dtc))
 print('Loading...')
+
+
 rfc = RandomForestClassifier()    
 
 rfc.fit(X_train, Y_train)
@@ -116,12 +123,40 @@ rfc.score(X_test, Y_test)
 
 
 print(classification_report(Y_test,predict_rfc))
-print('Loading...')
-gbc= GradientBoostingClassifier()   
+
+
+
+# Optimizing by reducing the parameter n_estimators to 50. Optimizing by lower the depth of the tree. Using pararellized training with the n_jobs parameter.
+gbc= GradientBoostingClassifier(n_estimators=50, max_depth=2, learning_rate=0.1)   
+# , n_jobs=-1
+start= datetime.now()
 gbc.fit(X_train, Y_train)
+stop= datetime.now()
+execution_time_gbc = start-stop
+print('execution time gbc:', execution_time_gbc)
 pred_gbc = gbc.predict(X_test)
 gbc.score(X_test, Y_test)
 
+
+
+#lightgbm test
+d_train= lgb.Dataset(X_train, label=Y_train)
+lgbm_params = {'learning_rate': 0.05,
+               'boosting_type': 'gbdt',
+               'objective': 'binary' ,
+                'metric': ['auc', 'binary_logloss'],
+                'num_leaves': 100,
+                'max_depth': 10,} #Change num_leaves and test
+start= datetime.now()
+classifier = lgb.train(lgbm_params, d_train, 50) #50 iterations, learning rate and iterations are related.
+stop= datetime.now()
+execution_time_lgbm = start-stop
+print('execution time lgbm:', execution_time_lgbm)
+
+
+
+#Using profiles to see where the program takes a long time to execute.
+cProfile.run('gbc.fit(X_train, Y_train)')
 print(classification_report(Y_test, pred_gbc))
 
 def output_label(n): 
@@ -141,8 +176,14 @@ def manual_testing(news):
     pred_lr = model.predict(new_xv_test)
     pred_gbc = gbc.predict(new_xv_test)
     pred_rfc = rfc.predict(new_xv_test)
-    return "\n\nLR prediction: {}  \nGBC Prediction: {}  \n RFC Prediction: {}".format(output_label(pred_lr[0]), output_label(pred_gbc[0]), output_label(pred_rfc[0]))
-print(r"Paste your fake news here(without formatting or paragraph division):")
+    pred_lgbm= classifier.predict(new_xv_test)
+    for i in range(0, new_x_test.shape[0]):
+         if pred_lgbm[i] >= .5:
+            pred_lgbm[i]=1
+         else:
+             pred_lgbm[i]=0
+    return "\n\nLR prediction: {}  \nGBC Prediction: {}  \n RFC Prediction: {}\n LGBM Prediction: {}".format(output_label(pred_lr[0]), output_label(pred_gbc[0]), output_label(pred_rfc[0]),  output_label(pred_lgbm[0]))
+print(r"Paste your news here:")
 news_article=str(input())
 
 print(manual_testing(news_article))
