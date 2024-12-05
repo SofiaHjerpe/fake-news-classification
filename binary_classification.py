@@ -22,7 +22,7 @@ news_dataset, eng_news_dataset= pd.concat(frames), pd.concat(eng_frames)
 #Remove unused columns from the datasets
 news_dataset.drop([ 'ämne', 'titel'], axis=1, inplace=True)
 eng_news_dataset.drop(['title', 'subject', 'date'], axis=1, inplace=True)
-eng_news_dataset.rename(columns={'target': 'label'})
+eng_news_dataset = eng_news_dataset.rename(columns={'target': 'label'})
 print(eng_news_dataset)
 #shorten down the eng_news_dataset, selecting 20000 random rows from the eng_news_dataset
 eng_news_dataset= eng_news_dataset.sample(n=20000) 
@@ -81,6 +81,7 @@ X= vectorizer.transform(X)
 print(X)
 
 # text will be used for X data, remaining Y datam stratify = Y , random state 
+# LogisticRegression uses the sigmoidfunction. The sigmoid funktion ensures that output are between 1 and 0. It uses linear combination of input and converts it into probabilities.
 
 X_train, X_test, Y_train, Y_test = train_test_split(X,Y, test_size=0.2,random_state=2)
 
