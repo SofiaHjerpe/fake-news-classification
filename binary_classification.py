@@ -72,7 +72,6 @@ X_train, X_test, Y_train, Y_test = train_test_split(X,Y, test_size=0.2,random_st
 
 
 # LogisticRegression uses the sigmoidfunction. The sigmoidfunktion ensures that output are between 1 and 0. It uses linear combination of input and converts it into probabilities. 
-# I choose this model because it specifically made for binary classification and because it is fast. It is also good at making biased predictions based on imbalenced datasets.
 model= LogisticRegression()
 
 model.fit(X_train, Y_train)
