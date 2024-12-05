@@ -12,20 +12,21 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.metrics import accuracy_score, classification_report
 # Import data
-df, dataf, engdf, engdataf = pd.read_csv("sanna_nyheter.csv"), pd.read_csv("falska_nyheter.csv"), pd.read_csv("fake_real_news_1.csv"), pd.read_csv("Fake_real_news_2.csv")
-
+dftrue, dffake,engdffake, engdftrue = pd.read_csv("sanna_nyheter.csv"), pd.read_csv("falska_nyheter.csv"), pd.read_csv("fake.csv"), pd.read_csv("true.csv")
+engdffake['label'] = 0
+engdftrue['label']= 1
 #Mergeing dataframes, concatinating(sammanfogar) objects within a list
-frames, eng_frames= [df, dataf], [engdf, engdataf]
+frames= [dftrue, dffake]
+eng_frames=[engdftrue, engdffake]
 news_dataset, eng_news_dataset= pd.concat(frames), pd.concat(eng_frames)
 
 
 #Remove unused columns from the datasets
 news_dataset.drop([ 'ämne', 'titel'], axis=1, inplace=True)
-eng_news_dataset.drop(['title', 'subject', 'date'], axis=1, inplace=True)
-eng_news_dataset = eng_news_dataset.rename(columns={'target': 'label'})
+eng_news_dataset.drop(['date','subject', 'title'], axis=1, inplace=True)
+
 print(eng_news_dataset)
-#shorten down the eng_news_dataset, selecting 20000 random rows from the eng_news_dataset
-eng_news_dataset= eng_news_dataset.sample(n=20000) 
+
 
 
 # Mergeing dataframes
@@ -81,11 +82,10 @@ X= vectorizer.transform(X)
 print(X)
 
 # text will be used for X data, remaining Y datam stratify = Y , random state 
-# LogisticRegression uses the sigmoidfunction. The sigmoid funktion ensures that output are between 1 and 0. It uses linear combination of input and converts it into probabilities.
 
 X_train, X_test, Y_train, Y_test = train_test_split(X,Y, test_size=0.2,random_state=2)
 
-
+# LogisticRegression uses the sigmoidfunction. The sigmoid funktion ensures that output are between 1 and 0. It uses linear combination of input and converts it into probabilities.
 model= LogisticRegression()
 
 model.fit(X_train, Y_train)
@@ -101,7 +101,7 @@ test_data_accuraccy = accuracy_score(X_test_prediction, Y_test)
 print('Accuracy score of the test data: ', test_data_accuraccy)
 
 
-
+#DecisionT
 DTC = DecisionTreeClassifier(max_depth=5, min_samples_leaf=2)
 
 DTC.fit(X_train, Y_train)
@@ -114,7 +114,7 @@ print(classification_report(Y_test, pred_dtc))
 print('Loading...')
 
 
-rfc = RandomForestClassifier()    
+rfc = RandomForestClassifier(n_jobs=-1)    
 
 rfc.fit(X_train, Y_train)
 predict_rfc = rfc.predict(X_test)
