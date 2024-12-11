@@ -17,6 +17,7 @@ engdftrue['label']= 1
 frames= [dftrue, dffake]
 eng_frames=[engdftrue, engdffake]
 news_dataset, eng_news_dataset= pd.concat(frames), pd.concat(eng_frames)
+eng_news_dataset = eng_news_dataset.sample(frac=0.5)
 # Remove unused columns
 news_dataset.drop([ 'ämne', 'titel'], axis=1, inplace=True)
 eng_news_dataset.drop(['date','subject', 'title'], axis=1, inplace=True)
@@ -111,7 +112,7 @@ def manual_testing(news):
 
 
 while True: 
-   print(r"Paste your news here (the text in your article):")
+   print(r"Paste your news here (article text in English or Swedish):")
    news_article=str(input())
    if(news_article != ''):
       print(manual_testing(news_article))
